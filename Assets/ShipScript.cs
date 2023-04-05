@@ -22,25 +22,23 @@ public class ShipScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position = new Vector3(0,0,transform.position.z-moveSpeed*Time.deltaTime);
+        //transform.position = new Vector3(0,0,transform.position.z-moveSpeed*Time.deltaTime);
         CreateBullet();
-        //Destroy(gameObject, 2f);
+        transform.Rotate(0,moveSpeed*Time.deltaTime,0);
     }
 
     void CreateBullet()
     {
         if(bulletTime <= 0f)
         {
-            GameObject newBullet = Instantiate(bullet, shootPoint.position, bullet.transform.rotation);
+            GameObject newBullet = Instantiate(bullet, shootPoint.position, shootPoint.transform.rotation);
+            
+            newBullet.GetComponent<Rigidbody>().AddForce(newBullet.transform.forward * moveSpeed);
             Destroy(newBullet, bulletLifetime);
 
             bulletTime = bulletInterval;
         }
 
         bulletTime -= Time.deltaTime;
-    }
-    
-    private void OnDestroy() {
-        Debug.Log("Im ded.");
     }
 }
