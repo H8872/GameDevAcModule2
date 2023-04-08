@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float moveSpeedMult, torgueMult;
+    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1;
     Rigidbody2D rb;
 
     Color thrustCol;
     Camera cam;
     Vector3 viewportPos;
+    Transform shootPoint;
 
     SkinnedMeshRenderer shipMesh;
     GameManager manager;
     
-    [SerializeField] Light sun, sun2, thruster;
+    [SerializeField] Light sun, sun2;
+    Light thruster;
+    [SerializeField] GameObject bullet;
     //int colorSeq = 0;
     
     // Start is called before the first frame update
@@ -23,6 +26,8 @@ public class PlayerControl : MonoBehaviour
         manager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         shipMesh = transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
+        shootPoint = transform.GetChild(0).GetChild(0);
+        thruster = transform.GetChild(0).GetChild(1).GetComponent<Light>();
         cam = Camera.main;
         viewportPos = cam.WorldToViewportPoint(transform.position);
     }
@@ -34,6 +39,7 @@ public class PlayerControl : MonoBehaviour
     {
         viewportPos = cam.WorldToViewportPoint(transform.position);
         
+        //Screen wrap around
         Vector3 newPosition = transform.position;
         if (viewportPos.x > 1.01f || viewportPos.x < -0.01f)
         {
@@ -47,44 +53,49 @@ public class PlayerControl : MonoBehaviour
 
         yaxis = Input.GetAxisRaw("Vertical");
         
-            //transform.Rotate(0,0,-Input.GetAxisRaw("Horizontal"));
-            
-            if(Input.GetButtonDown("Jump"))
-            {
-                manager.ChangeLights();
-                manager.SpawnAsteroids(1);
-
-                /*switch(colorSeq)
-                {
-                    case 0:
-                        sun.color = Color.blue;
-                        sun2.color = Color.blue;
-                        break;
-                    case 1:
-                        sun.color = Color.red;
-                        sun2.color = Color.red;
-                        break;
-                    case 2:
-                        sun.color = Color.yellow;
-                        sun2.color = Color.yellow;
-                        break;
-                    default:
-                        sun.color = Color.green;
-                        sun2.color = Color.green;
-                        colorSeq = 0;
-                        break;
-                }
-                colorSeq++;*/
-                
-                //sun.color = Random.ColorHSV();
-                //sun2.color = Random.ColorHSV();
-                //thrustCol = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
-                //thruster.color = thrustCol;
-                
-            }
-
-        //Screen wrap around
+        //transform.Rotate(0,0,-Input.GetAxisRaw("Horizontal"));
         
+        if(Input.GetButtonDown("Jump"))
+        {
+            manager.ChangeLights();
+            manager.SpawnAsteroids(1);
+
+            /*switch(colorSeq)
+            {
+                case 0:
+                    sun.color = Color.blue;
+                    sun2.color = Color.blue;
+                    break;
+                case 1:
+                    sun.color = Color.red;
+                    sun2.color = Color.red;
+                    break;
+                case 2:
+                    sun.color = Color.yellow;
+                    sun2.color = Color.yellow;
+                    break;
+                default:
+                    sun.color = Color.green;
+                    sun2.color = Color.green;
+                    colorSeq = 0;
+                    break;
+            }
+            colorSeq++;*/
+            
+            //sun.color = Random.ColorHSV();
+            //sun2.color = Random.ColorHSV();
+            //thrustCol = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
+            //thruster.color = thrustCol;
+            
+        }
+        
+        if(Input.GetButtonDown("Fire1"))
+        {
+            GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
+            newBullet.transform.GetComponent<Rigidbody2D>().AddForce(shootPoint.up*shootForce);
+            Destroy(newBullet,2f);
+        }
+
     }
 
     private void FixedUpdate() {
@@ -109,8 +120,18 @@ public class PlayerControl : MonoBehaviour
 
     int value = 0;
     private void OnTriggerEnter2D(Collider2D other) {
-        Destroy(other.gameObject);
-        value++;
-        Debug.Log("hitted " + value);
+        if(other.tag == "Collectable")
+        {
+            Destroy(other.gameObject);
+            value++;
+            Debug.Log("hitted " + value);
+        }
+
+    }
+    private void OnCollisionEnter2D(Collision2D other) {
+        if(other.gameObject.tag == "Enemy")
+        {
+            Destroy(gameObject);
+        }
     }
 }

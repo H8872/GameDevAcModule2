@@ -223,9 +223,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeedMult: 250
   torgueMult: 2500
+  shootForce: 100
   sun: {fileID: 0}
   sun2: {fileID: 0}
-  thruster: {fileID: 1083164932}
+  bullet: {fileID: 2574597781635365470, guid: bda95dc2a92327e418f2f06b9a23aede, type: 3}
 --- !u!1001 &6061864418142969849
 PrefabInstance:
   m_ObjectHideFlags: 0
