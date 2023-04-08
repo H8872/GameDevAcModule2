@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyControl : MonoBehaviour
 {
-    enum EnemyType {ASTEROID, UFO}
+    enum EnemyType {ASTEROID, UFO, SMALSTEROID}
     [SerializeField] EnemyType enemyType;
     float rotationSpeed;
     float xspeed, yspeed;
@@ -65,5 +65,9 @@ public class EnemyControl : MonoBehaviour
             manager.Score++;
             manager.AsteroidCount--;
         }
+        else if(enemyType == EnemyType.SMALSTEROID)
+            manager.Score++;
+        else if(enemyType == EnemyType.UFO)
+            manager.Score += 10;
     }
 }
