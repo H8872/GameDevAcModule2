@@ -7,6 +7,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd = 0.5f, maxSpeed = 15f, invulnTime = 4;
     float shootCdTimer, invulnTimer;
     Rigidbody2D rb;
+    Collider2D shipCollider;
 
     Color thrustCol;
     Camera cam;
@@ -28,6 +29,7 @@ public class PlayerControl : MonoBehaviour
     {
         manager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         rb = gameObject.GetComponent<Rigidbody2D>();
+        shipCollider = gameObject.GetComponent<Collider2D>();
         shipMesh = transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
         shootPoint = transform.GetChild(0).GetChild(0);
         thrusterLight = transform.GetChild(0).GetChild(1).GetComponent<Light>();
@@ -74,11 +76,12 @@ public class PlayerControl : MonoBehaviour
             Destroy(newBullet,0.6f);
             shootCdTimer = shootCd;
         }
-        shootCdTimer -= Time.deltaTime;
+        else
+            shootCdTimer -= Time.deltaTime;
         
         if(invulnTimer > 0)
         {
-            gameObject.GetComponent<Collider2D>().enabled = false;
+            shipCollider.enabled = false;
             if(invulnTimer % 1 > 0.5f)
             {
                 shipMesh.enabled = true;
@@ -91,7 +94,7 @@ public class PlayerControl : MonoBehaviour
         else
         {
             shipMesh.enabled = true;
-            gameObject.GetComponent<Collider2D>().enabled = true;
+            shipCollider.enabled = true;
         }
     }
 
@@ -129,7 +132,6 @@ public class PlayerControl : MonoBehaviour
             value++;
             Debug.Log("hitted " + value);
         }
-
     }
     private void OnCollisionEnter2D(Collision2D other) {
         if(other.gameObject.tag == "Enemy")
