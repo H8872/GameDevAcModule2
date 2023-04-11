@@ -334,7 +334,7 @@ MonoBehaviour:
   asteroid: {fileID: 7141563479922774640, guid: 9134cde7e73e8ee4989512a81685b879, type: 3}
   sun1: {fileID: 705507994}
   sun2: {fileID: 432065848}
-  spawnAmount: 0
+  spawnAmount: 1
   asteroidCount: 0
   score: 0
 --- !u!4 &526511762

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd, shootCdTimer, maxSpeed;
+    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd = 0.5f, maxSpeed = 15f, invulnTime = 4;
+    float shootCdTimer, invulnTimer;
     Rigidbody2D rb;
 
     Color thrustCol;
@@ -34,10 +35,11 @@ public class PlayerControl : MonoBehaviour
         cam = Camera.main;
         viewportPos = cam.WorldToViewportPoint(transform.position);
         tEmission = thrusterParticles.emission;
+
+        invulnTimer = invulnTime;
     }
 
     float yaxis = 0;
-
     // Update is called once per frame
     void Update()
     {
@@ -61,52 +63,47 @@ public class PlayerControl : MonoBehaviour
         
         if(Input.GetButtonDown("Jump"))
         {
-
-            /*switch(colorSeq)
-            {
-                case 0:
-                    sun.color = Color.blue;
-                    sun2.color = Color.blue;
-                    break;
-                case 1:
-                    sun.color = Color.red;
-                    sun2.color = Color.red;
-                    break;
-                case 2:
-                    sun.color = Color.yellow;
-                    sun2.color = Color.yellow;
-                    break;
-                default:
-                    sun.color = Color.green;
-                    sun2.color = Color.green;
-                    colorSeq = 0;
-                    break;
-            }
-            colorSeq++;*/
-            
-            //sun.color = Random.ColorHSV();
-            //sun2.color = Random.ColorHSV();
-            //thrustCol = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
-            //thruster.color = thrustCol;
             
         }
         
         if(Input.GetButton("Fire1") && shootCdTimer <= 0f)
         {
             GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
+            newBullet.transform.GetComponent<Rigidbody2D>().velocity = rb.velocity;
             newBullet.transform.GetComponent<Rigidbody2D>().AddForce(shootPoint.up*shootForce);
-            Destroy(newBullet,0.7f);
+            Destroy(newBullet,0.6f);
             shootCdTimer = shootCd;
         }
         shootCdTimer -= Time.deltaTime;
-
+        
+        if(invulnTimer > 0)
+        {
+            gameObject.GetComponent<Collider2D>().enabled = false;
+            if(invulnTimer % 1 > 0.5f)
+            {
+                shipMesh.enabled = true;
+            }
+            else{
+                shipMesh.enabled = false;
+            }
+            invulnTimer -= Time.deltaTime;
+        }
+        else
+        {
+            shipMesh.enabled = true;
+            gameObject.GetComponent<Collider2D>().enabled = true;
+        }
     }
 
     private void FixedUpdate() {
         
-        if(Mathf.Abs(rb.angularVelocity)<320)
+        /*if(Mathf.Abs(rb.angularVelocity)<320)
+        {
             rb.AddTorque(-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime);
-//eg
+        }*/
+
+        transform.Rotate(new Vector3(0,0,-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime));
+
         if(yaxis>0f)
             {
                 if(rb.velocity.magnitude < maxSpeed)
@@ -139,5 +136,9 @@ public class PlayerControl : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+    public void ResetInvuln()
+    {
+        invulnTimer = invulnTime;
     }
 }

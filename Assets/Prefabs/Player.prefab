@@ -5013,8 +5013,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 1
-  m_AngularDrag: 75
+  m_LinearDrag: 0.1
+  m_AngularDrag: 100
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -5033,12 +5033,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e6989acdda593942b9eaf32a5a818b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeedMult: 250
-  torgueMult: 2500
+  moveSpeedMult: 350
+  torgueMult: 360
   shootForce: 100
-  shootCd: 0
+  shootCd: 0.2
   shootCdTimer: 0
-  maxSpeed: 0
+  maxSpeed: 13
   bullet: {fileID: 2574597781635365470, guid: bda95dc2a92327e418f2f06b9a23aede, type: 3}
 --- !u!1001 &6061864418142969849
 PrefabInstance:
