@@ -251,7 +251,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 0.4811321, g: 0.4811321, b: 0.4811321, a: 1}
-  m_Intensity: 0.5
+  m_Intensity: 0.7
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -334,7 +334,7 @@ MonoBehaviour:
   asteroid: {fileID: 7141563479922774640, guid: 9134cde7e73e8ee4989512a81685b879, type: 3}
   sun1: {fileID: 705507994}
   sun2: {fileID: 432065848}
-  spawnAmount: 8
+  spawnAmount: 0
   asteroidCount: 0
   score: 0
 --- !u!4 &526511762
@@ -454,30 +454,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5075792681999497950, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: sun
-      value: 
-      objectReference: {fileID: 705507994}
-    - target: {fileID: 5075792681999497950, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: sun2
-      value: 
-      objectReference: {fileID: 432065848}
-    - target: {fileID: 6061864418423079775, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.54
-      objectReference: {fileID: 0}
-    - target: {fileID: 6061864418423079775, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 6061864418423079775, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 6061864418423079775, guid: d63d68048e253084696663b7e2330b8f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
-      objectReference: {fileID: 0}
     - target: {fileID: 6061864418514205308, guid: d63d68048e253084696663b7e2330b8f, type: 3}
       propertyPath: m_RootOrder
       value: 3

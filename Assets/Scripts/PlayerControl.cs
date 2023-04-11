@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1;
+    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd, shootCdTimer, maxSpeed;
     Rigidbody2D rb;
 
     Color thrustCol;
@@ -15,8 +15,10 @@ public class PlayerControl : MonoBehaviour
     SkinnedMeshRenderer shipMesh;
     GameManager manager;
     
-    [SerializeField] Light sun, sun2;
-    Light thruster;
+    //[SerializeField] Light sun, sun2;
+    Light thrusterLight;
+    ParticleSystem thrusterParticles;
+    ParticleSystem.EmissionModule tEmission;
     [SerializeField] GameObject bullet;
     //int colorSeq = 0;
     
@@ -27,9 +29,11 @@ public class PlayerControl : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         shipMesh = transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
         shootPoint = transform.GetChild(0).GetChild(0);
-        thruster = transform.GetChild(0).GetChild(1).GetComponent<Light>();
+        thrusterLight = transform.GetChild(0).GetChild(1).GetComponent<Light>();
+        thrusterParticles = transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>();
         cam = Camera.main;
         viewportPos = cam.WorldToViewportPoint(transform.position);
+        tEmission = thrusterParticles.emission;
     }
 
     float yaxis = 0;
@@ -57,8 +61,6 @@ public class PlayerControl : MonoBehaviour
         
         if(Input.GetButtonDown("Jump"))
         {
-            manager.ChangeLights();
-            manager.SpawnAsteroids(1);
 
             /*switch(colorSeq)
             {
@@ -89,12 +91,14 @@ public class PlayerControl : MonoBehaviour
             
         }
         
-        if(Input.GetButtonDown("Fire1"))
+        if(Input.GetButton("Fire1") && shootCdTimer <= 0f)
         {
             GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
             newBullet.transform.GetComponent<Rigidbody2D>().AddForce(shootPoint.up*shootForce);
-            Destroy(newBullet,2f);
+            Destroy(newBullet,0.7f);
+            shootCdTimer = shootCd;
         }
+        shootCdTimer -= Time.deltaTime;
 
     }
 
@@ -102,19 +106,21 @@ public class PlayerControl : MonoBehaviour
         
         if(Mathf.Abs(rb.angularVelocity)<320)
             rb.AddTorque(-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime);
-        
+//eg
         if(yaxis>0f)
             {
-                if(true)
+                if(rb.velocity.magnitude < maxSpeed)
                     rb.AddForce(transform.up*moveSpeedMult*yaxis*Time.fixedDeltaTime);
                 shipMesh.SetBlendShapeWeight(0,(Time.time % 0.2f)*100f+80f);
-                thruster.intensity = 5.0f + (Time.time % 0.3f)*4;
-                thruster.enabled = true;
+                thrusterLight.intensity = 5.0f + (Time.time % 0.3f)*4;
+                thrusterLight.enabled = true;
+                tEmission.enabled = true;
             }
             else
             {
                 shipMesh.SetBlendShapeWeight(0,0);
-                thruster.enabled = false;
+                thrusterLight.enabled = false;
+                tEmission.enabled = false;
             }
     }
 

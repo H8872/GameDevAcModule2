@@ -62,12 +62,12 @@ public class EnemyControl : MonoBehaviour
     private void OnDestroy() {
         if(enemyType == EnemyType.ASTEROID)
         {
-            manager.Score++;
+            manager.Score += 10;
             manager.AsteroidCount--;
         }
         else if(enemyType == EnemyType.SMALSTEROID)
-            manager.Score++;
+            manager.Score += 50;
         else if(enemyType == EnemyType.UFO)
-            manager.Score += 10;
+            manager.Score += 100;
     }
 }
