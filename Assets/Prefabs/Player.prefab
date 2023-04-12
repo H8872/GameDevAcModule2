@@ -5034,10 +5034,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeedMult: 350
-  torgueMult: 360
+  torgueMult: 45000
   shootForce: 100
   shootCd: 0.2
-  shootCdTimer: 0
   maxSpeed: 13
   bullet: {fileID: 2574597781635365470, guid: bda95dc2a92327e418f2f06b9a23aede, type: 3}
 --- !u!1001 &6061864418142969849

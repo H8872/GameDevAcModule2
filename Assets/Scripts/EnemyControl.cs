@@ -67,7 +67,7 @@ public class EnemyControl : MonoBehaviour
         }
     }
 
-    private void KillSelf()
+    public void KillSelf()
     {
         gameObject.GetComponent<PolygonCollider2D>().enabled = false;
         switch(enemyType)

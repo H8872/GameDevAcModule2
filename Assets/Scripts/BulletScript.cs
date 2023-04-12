@@ -21,7 +21,6 @@ public class BulletScript : MonoBehaviour
     void Update()
     {
         viewportPos = cam.WorldToViewportPoint(transform.position);
-        
         //transform.position += transform.forward * 4f * Time.deltaTime;
         Vector3 newPosition = transform.position;
         if (viewportPos.x > 1.01f || viewportPos.x < -0.01f)

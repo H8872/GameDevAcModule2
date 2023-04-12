@@ -38,17 +38,17 @@ public class GameManager : MonoBehaviour
 
     public void ChangeLights()
     {
-        sun1color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.5f,0.5f);
+        sun1color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.35f,0.35f);
         sun1.color = sun1color;
         var bgPCOverL = bgParticles.colorOverLifetime;
         if(sun1.color.grayscale < 0.5f)
         {
-            sun2color = Random.ColorHSV(0f,1f,0f,1f,1f,1f,0.5f,0.5f);
+            sun2color = Random.ColorHSV(0f,1f,0f,1f,1f,1f,0.35f,0.35f);
             bgPCOverL.color = sun2color;
         }
         else
         {
-            sun2color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.5f,0.5f);
+            sun2color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.35f,0.35f);
             bgPCOverL.color = sun1color;
         }
         sun2.color = sun2color;
@@ -78,6 +78,9 @@ public class GameManager : MonoBehaviour
             player = Instantiate(playerFab);
             playerThruster = player.transform.GetChild(0).GetChild(1).GetComponent<Light>();
             playerThrusterParticles = player.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>();
+            pControl = player.GetComponent<PlayerControl>();
+            
+            pControl.ResetInvuln(3);
             Debug.Log("Done");
         }
         else
@@ -95,16 +98,19 @@ public class GameManager : MonoBehaviour
             ChangeLights();
             pControl.ResetInvuln(3);
         }
-        if(player == null && lives > 0)
+        if(player == null)
         {
-            lives--;
-            Debug.Log($"{lives} lives left");
-            SpawnPlayer();
-        }
-        if(lives <= 0)
-        {
-            Debug.Log($"Game over! Level: {level} Score: {score}");
-            Time.timeScale = 0;
+            if(lives <= 0)
+            {
+                Debug.Log($"Game over! Level: {level} Score: {score}");
+                Time.timeScale = 0;
+            }
+            else
+            {
+                lives--;
+                Debug.Log($"{lives} lives left");
+                SpawnPlayer();
+            }
         }
 
         //debug button :)

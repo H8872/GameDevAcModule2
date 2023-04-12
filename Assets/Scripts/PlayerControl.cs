@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+
 
 public class PlayerControl : MonoBehaviour
 {
@@ -8,6 +10,8 @@ public class PlayerControl : MonoBehaviour
     float shootCdTimer, invulnTimer;
     Rigidbody2D rb;
     Collider2D shipCollider;
+
+    [SerializeField] TextMeshPro scoreText, livesText, gameoverText, scoreboardText;
 
     Color thrustCol;
     Camera cam;
@@ -101,28 +105,29 @@ public class PlayerControl : MonoBehaviour
 
     private void FixedUpdate() {
         
-        /*if(Mathf.Abs(rb.angularVelocity)<320)
-        {
-            rb.AddTorque(-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime);
-        }*/
+        rb.angularVelocity = -Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime;
+        //if(Mathf.Abs(rb.angularVelocity)<320)
+        //{
+         //   rb.AddTorque(-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime);
+        //}
 
-        transform.Rotate(new Vector3(0,0,-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime));
+        //transform.Rotate(new Vector3(0,0,-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime));
 
         if(yaxis>0f)
-            {
-                if(rb.velocity.magnitude < maxSpeed)
-                    rb.AddForce(transform.up*moveSpeedMult*yaxis*Time.fixedDeltaTime);
-                shipMesh.SetBlendShapeWeight(0,(Time.time % 0.2f)*100f+80f);
-                thrusterLight.intensity = 5.0f + (Time.time % 0.3f)*4;
-                thrusterLight.enabled = true;
-                tEmission.enabled = true;
-            }
-            else
-            {
-                shipMesh.SetBlendShapeWeight(0,0);
-                thrusterLight.enabled = false;
-                tEmission.enabled = false;
-            }
+        {
+            if(rb.velocity.magnitude < maxSpeed)
+                rb.AddForce(transform.up*moveSpeedMult*yaxis*Time.fixedDeltaTime);
+            shipMesh.SetBlendShapeWeight(0,(Time.time % 0.2f)*100f+80f);
+            thrusterLight.intensity = 5.0f + (Time.time % 0.3f)*4;
+            thrusterLight.enabled = true;
+            tEmission.enabled = true;
+        }
+        else
+        {
+            shipMesh.SetBlendShapeWeight(0,0);
+            thrusterLight.enabled = false;
+            tEmission.enabled = false;
+        }
     }
 
     int value = 0;
@@ -131,9 +136,10 @@ public class PlayerControl : MonoBehaviour
         {
             Destroy(other.gameObject);
             value++;
-            Debug.Log("hitted " + value);
+            Debug.Log("Collected " + value);
         }
     }
+
     private void OnCollisionEnter2D(Collision2D other) {
         if(other.gameObject.tag == "Enemy")
         {
