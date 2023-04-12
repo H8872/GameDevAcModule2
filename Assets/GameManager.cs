@@ -6,18 +6,20 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] GameObject playerFab, asteroid;
     GameObject player;
+    PlayerControl pControl;
     [SerializeField] Light sun1, sun2;
-    Color playerThrusterColor;
+    Color playerThrusterColor, sun1color, sun2color;
     Light playerThruster;
-    ParticleSystem playerThrusterParticles;
+    ParticleSystem playerThrusterParticles, bgParticles;
     public float Score {get{return score;} set{score = value;}}
     public float AsteroidCount {get{return asteroidCount;} set{asteroidCount = value;}}
-    [SerializeField] float spawnAmount = 8, asteroidCount = 0, score = 0, lives = 3;
+    [SerializeField] float spawnAmount = 8, asteroidCount = 0, score = 0, lives = 3, level = 0;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        bgParticles = GameObject.FindWithTag("Background").GetComponent<ParticleSystem>();
         Debug.Log($"Game Start! You have {lives} lives");
         player = GameObject.FindWithTag("Player");
         if(player == null)
@@ -26,19 +28,30 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            pControl = player.GetComponent<PlayerControl>();
             playerThruster = player.transform.GetChild(0).GetChild(1).GetComponent<Light>();
             playerThrusterParticles = player.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>();
         }
+        pControl.ResetInvuln(4);
         SpawnAsteroids(spawnAmount);
     }
 
     public void ChangeLights()
     {
-        sun1.color = Random.ColorHSV(0f,1f,0f,1f,0f,1f);
-        if(sun1.color.grayscale < 0.7)
-            sun2.color = Random.ColorHSV(0f,1f,0f,1f,1f,1f);
+        sun1color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.5f,0.5f);
+        sun1.color = sun1color;
+        var bgPCOverL = bgParticles.colorOverLifetime;
+        if(sun1.color.grayscale < 0.5f)
+        {
+            sun2color = Random.ColorHSV(0f,1f,0f,1f,1f,1f,0.5f,0.5f);
+            bgPCOverL.color = sun2color;
+        }
         else
-            sun2.color = Random.ColorHSV(0f,1f,0f,1f,0f,1f);
+        {
+            sun2color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.5f,0.5f);
+            bgPCOverL.color = sun1color;
+        }
+        sun2.color = sun2color;
         playerThrusterColor = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
         playerThruster.color = playerThrusterColor;
         var pTPmain = playerThrusterParticles.main;
@@ -76,9 +89,11 @@ public class GameManager : MonoBehaviour
     {
         if(asteroidCount == 0 && spawnAmount != 0)
         {
-            SpawnAsteroids(spawnAmount);
+            level++;
+            Debug.Log($"You reached level {level}! Current score: {score}");
+            SpawnAsteroids(spawnAmount+level);
             ChangeLights();
-            player.GetComponent<PlayerControl>().ResetInvuln();
+            pControl.ResetInvuln(3);
         }
         if(player == null && lives > 0)
         {
@@ -88,7 +103,7 @@ public class GameManager : MonoBehaviour
         }
         if(lives <= 0)
         {
-            Debug.Log($"Game over! Score: {score}");
+            Debug.Log($"Game over! Level: {level} Score: {score}");
             Time.timeScale = 0;
         }
 

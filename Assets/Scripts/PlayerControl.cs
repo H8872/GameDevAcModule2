@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd = 0.5f, maxSpeed = 15f, invulnTime = 4;
+    [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd = 0.5f, maxSpeed = 15f;
     float shootCdTimer, invulnTimer;
     Rigidbody2D rb;
     Collider2D shipCollider;
@@ -37,8 +37,6 @@ public class PlayerControl : MonoBehaviour
         cam = Camera.main;
         viewportPos = cam.WorldToViewportPoint(transform.position);
         tEmission = thrusterParticles.emission;
-
-        invulnTimer = invulnTime;
     }
 
     float yaxis = 0;
@@ -68,7 +66,7 @@ public class PlayerControl : MonoBehaviour
             
         }
         
-        if(Input.GetButton("Fire1") && shootCdTimer <= 0f)
+        if(Input.GetButtonDown("Fire1") && shootCdTimer <= 0f)
         {
             GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
             newBullet.transform.GetComponent<Rigidbody2D>().velocity = rb.velocity;
@@ -76,7 +74,7 @@ public class PlayerControl : MonoBehaviour
             Destroy(newBullet,0.6f);
             shootCdTimer = shootCd;
         }
-        else
+        if(shootCdTimer > 0f)
             shootCdTimer -= Time.deltaTime;
         
         if(invulnTimer > 0)
@@ -84,16 +82,19 @@ public class PlayerControl : MonoBehaviour
             shipCollider.enabled = false;
             if(invulnTimer % 1 > 0.5f)
             {
-                shipMesh.enabled = true;
+                shipMesh.material.color = new Color(1,1,1,1);
+                //shipMesh.enabled = true;
             }
             else{
-                shipMesh.enabled = false;
+                shipMesh.material.color = new Color(1,1,1,0.2f);
+                //shipMesh.enabled = false;
             }
             invulnTimer -= Time.deltaTime;
         }
         else
         {
-            shipMesh.enabled = true;
+            shipMesh.material.color = new Color(1,1,1,1);
+            //shipMesh.enabled = true;
             shipCollider.enabled = true;
         }
     }
@@ -139,8 +140,8 @@ public class PlayerControl : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public void ResetInvuln()
+    public void ResetInvuln(int time)
     {
-        invulnTimer = invulnTime;
+        invulnTimer = time;
     }
 }
