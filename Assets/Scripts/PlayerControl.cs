@@ -31,12 +31,16 @@ public class PlayerControl : MonoBehaviour
     bool amDead = false;
     //int colorSeq = 0;
     
+    void Awake() {
+        invulnTimer = 1f;
+    }
     // Start is called before the first frame update
     void Start()
     {
         manager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         shipCollider = gameObject.GetComponent<Collider2D>();
+        shipCollider.enabled = false;
         aSource = transform.GetComponent<AudioSource>();
         shipMesh = transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
         shootPoint = transform.GetChild(0).GetChild(0);
@@ -80,7 +84,7 @@ public class PlayerControl : MonoBehaviour
             GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
             newBullet.transform.GetComponent<Rigidbody2D>().velocity = rb.velocity;
             newBullet.transform.GetComponent<Rigidbody2D>().AddForce(shootPoint.up*shootForce);
-            Destroy(newBullet,0.6f);
+            Destroy(newBullet,0.45f);
             shootCdTimer = shootCd;
             aSource.Play();
         }

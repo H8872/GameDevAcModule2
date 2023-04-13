@@ -63,6 +63,7 @@ public class EnemyControl : MonoBehaviour
         }
         else if(enemyType == EnemyType.UFO)
         {
+            transform.GetChild(0).Rotate(0f,-90f*Time.deltaTime,0f);
             gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 1000 * Time.deltaTime);
         }
     }

@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour
             playerThruster = player.transform.GetChild(0).GetChild(1).GetComponent<Light>();
             playerThrusterParticles = player.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>();
         }
+        playerThrusterColor = playerThruster.color;
         pControl.ResetInvuln(4);
         UpdateUI();
         SpawnAsteroids(spawnAmount);
@@ -116,6 +117,7 @@ public class GameManager : MonoBehaviour
         {
             player = Instantiate(playerFab);
             playerThruster = player.transform.GetChild(0).GetChild(1).GetComponent<Light>();
+            playerThruster.color = playerThrusterColor;
             playerThrusterParticles = player.transform.GetChild(0).GetChild(2).GetComponent<ParticleSystem>();
             pControl = player.GetComponent<PlayerControl>();
             
@@ -168,7 +170,7 @@ public class GameManager : MonoBehaviour
             audioSource.Play();
             ufoCount = Mathf.FloorToInt((level - 1)/3f);
             Debug.Log($"You reached level {level}! Current score: {score}");
-            SpawnAsteroids(spawnAmount+level-1);
+            SpawnAsteroids(spawnAmount+level);
             ChangeLights();
             pControl.ResetInvuln(3);
         }
@@ -199,6 +201,10 @@ public class GameManager : MonoBehaviour
             //SpawnUfo();
             //SpawnAsteroids(1);
         }
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     string chars = "ABCDEFGHOIJKLMNOPQRSTUVWXYZ";
@@ -212,7 +218,6 @@ public class GameManager : MonoBehaviour
         scoboText.text = "";
         for (int i = 0; i < scores.Length; i++)
         {
-            Debug.Log($"{score} < {scores[scores.Length-i-1]} = {score < scores[scores.Length-i-1]}");
             if(score <= scores[scores.Length-i-1])
             {
                 //tmp is 3 random letters from 'chars' string
