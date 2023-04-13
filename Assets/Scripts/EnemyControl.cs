@@ -6,7 +6,7 @@ public class EnemyControl : MonoBehaviour
 {
     enum EnemyType {ASTEROID, UFO, SMALSTEROID}
     [SerializeField] EnemyType enemyType;
-    float rotationSpeed, xspeed, yspeed, destroyTimer, smolroidAmount;
+    float rotationSpeed, xspeed, yspeed, smolroidAmount;
     Vector3 viewportPos;
     Camera cam;
     bool destroySelf;
@@ -43,19 +43,25 @@ public class EnemyControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //transform.RotateAround(transform.position, Vector3.forward,rotationSpeed*Time.deltaTime);
-        viewportPos = cam.WorldToViewportPoint(transform.position);
-        
-        Vector3 newPosition = transform.position;
-        if (viewportPos.x > 1.01f || viewportPos.x < -0.01f)
+        if(enemyType != EnemyType.UFO)
         {
-            newPosition.x = -(newPosition.x*0.95f);
+            viewportPos = cam.WorldToViewportPoint(transform.position);
+            Vector3 newPosition = transform.position;
+            if (viewportPos.x > 1.01f || viewportPos.x < -0.01f)
+            {
+                newPosition.x = -(newPosition.x*0.95f);
+            }
+            if (viewportPos.y > 1.01f || viewportPos.y < -0.01f)
+            {
+               newPosition.y = -(newPosition.y*0.95f);
+            }
+            transform.position = newPosition;
+            //transform.RotateAround(transform.position, Vector3.forward,rotationSpeed*Time.deltaTime);
         }
-        if (viewportPos.y > 1.01f || viewportPos.y < -0.01f)
+        else if(enemyType == EnemyType.UFO)
         {
-           newPosition.y = -(newPosition.y*0.95f);
+            gameObject.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 1000 * Time.deltaTime);
         }
-        transform.position = newPosition;
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
@@ -70,43 +76,40 @@ public class EnemyControl : MonoBehaviour
     public void KillSelf()
     {
         gameObject.GetComponent<PolygonCollider2D>().enabled = false;
+        transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+        gameObject.GetComponent<ParticleSystem>().Play();
         switch(enemyType)
         {
             case EnemyType.ASTEROID:
-                manager.Score += 10;
                 manager.AsteroidCount--;
                 for (int i = 0; i < smolroidAmount; i++)
                 {
                     GameObject newroid = Instantiate(asteroidFab, transform.position, transform.rotation);
                     newroid.GetComponent<Collider2D>().enabled = true;
+                    newroid.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                     newroid.GetComponent<EnemyControl>().enemyType = EnemyType.SMALSTEROID;
                 }
-                gameObject.GetComponent<ParticleSystem>().Play();
-                transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+                manager.Score += 10;
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.SMALSTEROID:
-                gameObject.GetComponent<ParticleSystem>().Play();
-                transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+                manager.Score += 25;
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.UFO:
-                Destroy(gameObject);
+                manager.Score += 100;
+                Destroy(gameObject, 2f);
                 break;
             default:
                 Destroy(gameObject);
                 break;
         }
+        manager.UpdateUI();
     }
 
     private void OnDestroy() {
-        if(enemyType == EnemyType.ASTEROID)
-        {
-            
-        }
-        else if(enemyType == EnemyType.SMALSTEROID)
-            manager.Score += 50;
-        else if(enemyType == EnemyType.UFO)
-            manager.Score += 100;
+        //if(enemyType == EnemyType.ASTEROID)
+        //else if(enemyType == EnemyType.SMALSTEROID)
+        //else if(enemyType == EnemyType.UFO)
     }
 }

@@ -8,24 +8,27 @@ public class PlayerControl : MonoBehaviour
 {
     [SerializeField] float moveSpeedMult, torgueMult, shootForce = 1, shootCd = 0.5f, maxSpeed = 15f;
     float shootCdTimer, invulnTimer;
+
     Rigidbody2D rb;
     Collider2D shipCollider;
-
-    [SerializeField] TextMeshPro scoreText, livesText, gameoverText, scoreboardText;
+    SkinnedMeshRenderer shipMesh;
+    Transform shootPoint;
+    AudioSource aSource;
+    [SerializeField] AudioClip shootClip, boomClip;
 
     Color thrustCol;
     Camera cam;
     Vector3 viewportPos;
-    Transform shootPoint;
 
-    SkinnedMeshRenderer shipMesh;
     GameManager manager;
     
     //[SerializeField] Light sun, sun2;
     Light thrusterLight;
     ParticleSystem thrusterParticles;
     ParticleSystem.EmissionModule tEmission;
+    ParticleSystem.MainModule tMain;
     [SerializeField] GameObject bullet;
+    bool amDead = false;
     //int colorSeq = 0;
     
     // Start is called before the first frame update
@@ -34,6 +37,7 @@ public class PlayerControl : MonoBehaviour
         manager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
         rb = gameObject.GetComponent<Rigidbody2D>();
         shipCollider = gameObject.GetComponent<Collider2D>();
+        aSource = transform.GetComponent<AudioSource>();
         shipMesh = transform.GetChild(0).gameObject.GetComponent<SkinnedMeshRenderer>();
         shootPoint = transform.GetChild(0).GetChild(0);
         thrusterLight = transform.GetChild(0).GetChild(1).GetComponent<Light>();
@@ -41,6 +45,7 @@ public class PlayerControl : MonoBehaviour
         cam = Camera.main;
         viewportPos = cam.WorldToViewportPoint(transform.position);
         tEmission = thrusterParticles.emission;
+        tMain = thrusterParticles.main;
     }
 
     float yaxis = 0;
@@ -70,13 +75,14 @@ public class PlayerControl : MonoBehaviour
             
         }
         
-        if(Input.GetButtonDown("Fire1") && shootCdTimer <= 0f)
+        if(Input.GetButtonDown("Fire1") && shootCdTimer <= 0f && !amDead)
         {
             GameObject newBullet = Instantiate(bullet,shootPoint.position,shootPoint.rotation);
             newBullet.transform.GetComponent<Rigidbody2D>().velocity = rb.velocity;
             newBullet.transform.GetComponent<Rigidbody2D>().AddForce(shootPoint.up*shootForce);
             Destroy(newBullet,0.6f);
             shootCdTimer = shootCd;
+            aSource.Play();
         }
         if(shootCdTimer > 0f)
             shootCdTimer -= Time.deltaTime;
@@ -113,7 +119,7 @@ public class PlayerControl : MonoBehaviour
 
         //transform.Rotate(new Vector3(0,0,-Input.GetAxis("Horizontal")*torgueMult*Time.fixedDeltaTime));
 
-        if(yaxis>0f)
+        if(yaxis>0f && !amDead)
         {
             if(rb.velocity.magnitude < maxSpeed)
                 rb.AddForce(transform.up*moveSpeedMult*yaxis*Time.fixedDeltaTime);
@@ -143,7 +149,16 @@ public class PlayerControl : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other) {
         if(other.gameObject.tag == "Enemy")
         {
-            Destroy(gameObject);
+            aSource.clip = boomClip;
+            aSource.Play();
+            shipMesh.enabled = false;
+            shipCollider.enabled = false;
+            rb.velocity = new Vector2(0,0);
+            rb.angularVelocity = 0;
+            amDead = true;
+            tMain.startLifetime = 0f;
+            gameObject.GetComponent<ParticleSystem>().Play();
+            Destroy(gameObject, 2f);
         }
     }
     public void ResetInvuln(int time)
