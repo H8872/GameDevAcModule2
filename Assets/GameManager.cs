@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     Color playerThrusterColor, sun1color, sun2color;
     Light playerThruster;
     ParticleSystem playerThrusterParticles, bgParticles;
+    AudioSource audioSource, bgAudioSource;
+    [SerializeField] AudioClip levelChangeClip;
     bool isOver = false, scoreOver = false;
     public float Score {get{return score;} set{if(value <= 99999)score = value; else {score = 99999; scoreOver = true;}}}
     public float AsteroidCount {get{return asteroidCount;} set{asteroidCount = value;}}
@@ -26,6 +28,8 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         cam = Camera.main;
+        audioSource = transform.GetComponent<AudioSource>();
+        bgAudioSource = GameObject.FindWithTag("Background").GetComponent<AudioSource>();
         canvas = GameObject.FindWithTag("Canvas").transform;
         scoreText = canvas.GetChild(0).GetComponent<TextMeshProUGUI>();
         levelText = canvas.GetChild(1).GetComponent<TextMeshProUGUI>();
@@ -160,6 +164,8 @@ public class GameManager : MonoBehaviour
             }
             ufoTimer = ufoCd;
             level++;
+            audioSource.clip = levelChangeClip;
+            audioSource.Play();
             ufoCount = Mathf.FloorToInt((level - 1)/3f);
             Debug.Log($"You reached level {level}! Current score: {score}");
             SpawnAsteroids(spawnAmount+level-1);
@@ -224,6 +230,7 @@ public class GameManager : MonoBehaviour
             }
         }
         scoboText.enabled = true;
+        bgAudioSource.Stop();
         Time.timeScale = 0;
     }
 }

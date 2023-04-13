@@ -105,7 +105,8 @@ public class PlayerControl : MonoBehaviour
         {
             shipMesh.material.color = new Color(1,1,1,1);
             //shipMesh.enabled = true;
-            shipCollider.enabled = true;
+            if(!amDead)
+                shipCollider.enabled = true;
         }
     }
 

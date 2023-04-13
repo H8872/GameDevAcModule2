@@ -12,11 +12,14 @@ public class EnemyControl : MonoBehaviour
     bool destroySelf;
     GameManager manager;
     [SerializeField] GameObject asteroidFab;
+    AudioSource audioSource;
+    [SerializeField] AudioClip explosionClip;
 
     // Start is called before the first frame update
     void Start()
     {
         manager = GameObject.FindWithTag("GameController").GetComponent<GameManager>();
+        audioSource = transform.GetComponent<AudioSource>();
 
         smolroidAmount = 3;
 
@@ -90,14 +93,20 @@ public class EnemyControl : MonoBehaviour
                     newroid.GetComponent<EnemyControl>().enemyType = EnemyType.SMALSTEROID;
                 }
                 manager.Score += 10;
+                audioSource.clip = explosionClip;
+                audioSource.Play();
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.SMALSTEROID:
                 manager.Score += 25;
+                audioSource.clip = explosionClip;
+                audioSource.Play();
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.UFO:
                 manager.Score += 100;
+                audioSource.clip = explosionClip;
+                audioSource.Play();
                 Destroy(gameObject, 2f);
                 break;
             default:
