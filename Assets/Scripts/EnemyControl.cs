@@ -93,19 +93,19 @@ public class EnemyControl : MonoBehaviour
                     newroid.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                     newroid.GetComponent<EnemyControl>().enemyType = EnemyType.SMALSTEROID;
                 }
-                manager.Score += 10;
+                manager.Score += 15;
                 audioSource.clip = explosionClip;
                 audioSource.Play();
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.SMALSTEROID:
-                manager.Score += 25;
+                manager.Score += 35;
                 audioSource.clip = explosionClip;
                 audioSource.Play();
                 Destroy(gameObject, 2f);
                 break;
             case EnemyType.UFO:
-                manager.Score += 100;
+                manager.Score += 150;
                 audioSource.clip = explosionClip;
                 audioSource.Play();
                 Destroy(gameObject, 2f);

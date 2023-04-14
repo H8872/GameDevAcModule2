@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour
@@ -20,13 +21,24 @@ public class GameManager : MonoBehaviour
     bool isOver = false, scoreOver = false;
     public float Score {get{return score;} set{if(value <= 99999)score = value; else {score = 99999; scoreOver = true;}}}
     public float AsteroidCount {get{return asteroidCount;} set{asteroidCount = value;}}
-    [SerializeField] float spawnAmount = 8, asteroidCount = 0, ufoCount = 0, score = 0, lives = 3, level = 1, ufoSpeed = 1000, levelTimer;
+    [SerializeField] float spawnAmount = 8, asteroidCount = 0, ufoCount = 0, score = 0, lives = 3, level = 1, ufoSpeed = 1000, levelTimer, timerMult = 3, timeScoreMult = 13;
     float[] scores = new float[6];
 
 
     // Start is called before the first frame update
     void Start()
     {
+        /*
+        if(instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(instance);
+        }
+        */
         cam = Camera.main;
         audioSource = transform.GetComponent<AudioSource>();
         bgAudioSource = GameObject.FindWithTag("Background").GetComponent<AudioSource>();
@@ -68,24 +80,27 @@ public class GameManager : MonoBehaviour
 
     public void ChangeLights()
     {
-        sun1color = Random.ColorHSV(0f,1f,0f,1f,0.6f,1f,0.35f,0.35f);
-        sun1.color = sun1color;
-        var bgPCOverL = bgParticles.colorOverLifetime;
-        if(sun1.color.grayscale < 0.6f)
+        if(!isOver)
         {
-            sun2color = Random.ColorHSV(0f,1f,0f,1f,1f,1f,0.35f,0.35f);
-            bgPCOverL.color = sun2color;
+            sun1color = Random.ColorHSV(0f,1f,0f,1f,0.6f,1f,0.35f,0.35f);
+            sun1.color = sun1color;
+            var bgPCOverL = bgParticles.colorOverLifetime;
+            if(sun1.color.grayscale < 0.6f)
+            {
+                sun2color = Random.ColorHSV(0f,1f,0f,1f,1f,1f,0.35f,0.35f);
+                bgPCOverL.color = sun2color;
+            }
+            else
+            {
+                sun2color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.35f,0.35f);
+                bgPCOverL.color = sun1color;
+            }
+            sun2.color = sun2color;
+            playerThrusterColor = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
+            playerThruster.color = playerThrusterColor;
+            var pTPmain = playerThrusterParticles.main;
+            pTPmain.startColor = playerThrusterColor;
         }
-        else
-        {
-            sun2color = Random.ColorHSV(0f,1f,0f,1f,0f,1f,0.35f,0.35f);
-            bgPCOverL.color = sun1color;
-        }
-        sun2.color = sun2color;
-        playerThrusterColor = Random.ColorHSV(0f,1f,0f,1f,0.8f,1f);
-        playerThruster.color = playerThrusterColor;
-        var pTPmain = playerThrusterParticles.main;
-        pTPmain.startColor = playerThrusterColor;
     }
 
     public void SpawnAsteroids(float amount)
@@ -166,12 +181,12 @@ public class GameManager : MonoBehaviour
         {
             if(levelTimer>0)
             {
-                score += Mathf.CeilToInt(levelTimer * 10f);
-                bonusText.text = "SpeedBonus! +" + Mathf.CeilToInt(levelTimer * 10f)+"0";
+                score += Mathf.CeilToInt(levelTimer * timeScoreMult);
+                bonusText.text = "SpeedBonus! +" + Mathf.CeilToInt(levelTimer * timeScoreMult)+"0";
                 bonusText.enabled = true;
             }
             level++;
-            levelTimer = level * 5f;
+            levelTimer = level * timerMult;
 
 
             for (int i = 0; i < ufoCount; i++)
@@ -189,9 +204,8 @@ public class GameManager : MonoBehaviour
             ChangeLights();
             pControl.ResetInvuln(3);
         }
-        if(levelTimer < (level-1) * 5f - 3f)
+        if(levelTimer < level * timerMult - 3f)
             bonusText.enabled = false;
-        Debug.Log(levelTimer);
 
         // If player is gone
         if(player == null)
@@ -221,9 +235,9 @@ public class GameManager : MonoBehaviour
             //SpawnUfo();
             //SpawnAsteroids(1);
         }
-        if(Input.GetKey(KeyCode.Escape))
+        if(Input.GetKey(KeyCode.Escape) || Input.GetKey(KeyCode.Joystick1Button6))
         {
-            Application.Quit();
+            SceneManager.LoadScene("TitleScreen");
         }
 
         if(levelTimer > 0)
