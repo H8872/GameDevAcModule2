@@ -5,7 +5,7 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    TextMeshProUGUI scoreText, levelText, livesText, gamovText, scoboText;
+    TextMeshProUGUI scoreText, levelText, livesText, bonusText, gamovText, scoboText;
     [SerializeField] GameObject playerFab, asteroid, ufo;
     GameObject player;
     Transform canvas;
@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     bool isOver = false, scoreOver = false;
     public float Score {get{return score;} set{if(value <= 99999)score = value; else {score = 99999; scoreOver = true;}}}
     public float AsteroidCount {get{return asteroidCount;} set{asteroidCount = value;}}
-    [SerializeField] float spawnAmount = 8, asteroidCount = 0, ufoCount = 0, score = 0, lives = 3, level = 1, ufoSpeed = 1000;
+    [SerializeField] float spawnAmount = 8, asteroidCount = 0, ufoCount = 0, score = 0, lives = 3, level = 1, ufoSpeed = 1000, levelTimer;
     float[] scores = new float[6];
 
 
@@ -34,8 +34,10 @@ public class GameManager : MonoBehaviour
         scoreText = canvas.GetChild(0).GetComponent<TextMeshProUGUI>();
         levelText = canvas.GetChild(1).GetComponent<TextMeshProUGUI>();
         livesText = canvas.GetChild(2).GetComponent<TextMeshProUGUI>();
-        gamovText = canvas.GetChild(3).GetComponent<TextMeshProUGUI>();
-        scoboText = canvas.GetChild(4).GetComponent<TextMeshProUGUI>();
+        bonusText = canvas.GetChild(3).GetComponent<TextMeshProUGUI>();
+        gamovText = canvas.GetChild(4).GetComponent<TextMeshProUGUI>();
+        scoboText = canvas.GetChild(5).GetComponent<TextMeshProUGUI>();
+        bonusText.enabled = false;
         gamovText.enabled = false;
         scoboText.enabled = false;
         scores[0] = 1;
@@ -147,7 +149,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(ufoTimer+" "+ufoCount);
+        // Ufo spawning
         if(ufoCount>0)
         {
             if(ufoTimer<0)
@@ -158,22 +160,40 @@ public class GameManager : MonoBehaviour
             }
             else ufoTimer -= Time.deltaTime;
         }
+
+        // Level Up
         if(asteroidCount == 0 && spawnAmount != 0)
         {
+            if(levelTimer>0)
+            {
+                score += Mathf.CeilToInt(levelTimer * 10f);
+                bonusText.text = "SpeedBonus! +" + Mathf.CeilToInt(levelTimer * 10f)+"0";
+                bonusText.enabled = true;
+            }
+            level++;
+            levelTimer = level * 5f;
+
+
             for (int i = 0; i < ufoCount; i++)
             {
                 SpawnUfo();
             }
             ufoTimer = ufoCd;
-            level++;
+            ufoCount = Mathf.FloorToInt((level - 1)/3f);
+
             audioSource.clip = levelChangeClip;
             audioSource.Play();
-            ufoCount = Mathf.FloorToInt((level - 1)/3f);
+
             Debug.Log($"You reached level {level}! Current score: {score}");
             SpawnAsteroids(spawnAmount+level);
             ChangeLights();
             pControl.ResetInvuln(3);
         }
+        if(levelTimer < (level-1) * 5f - 3f)
+            bonusText.enabled = false;
+        Debug.Log(levelTimer);
+
+        // If player is gone
         if(player == null)
         {
             if(lives <= 0)
@@ -205,6 +225,9 @@ public class GameManager : MonoBehaviour
         {
             Application.Quit();
         }
+
+        if(levelTimer > 0)
+            levelTimer -= Time.deltaTime;
     }
 
     string chars = "ABCDEFGHOIJKLMNOPQRSTUVWXYZ";

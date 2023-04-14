@@ -56,9 +56,8 @@ public class PlayerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        viewportPos = cam.WorldToViewportPoint(transform.position);
-        
         //Screen wrap around
+        viewportPos = cam.WorldToViewportPoint(transform.position);
         Vector3 newPosition = transform.position;
         if (viewportPos.x > 1.01f || viewportPos.x < -0.01f)
         {
@@ -70,9 +69,8 @@ public class PlayerControl : MonoBehaviour
         }
         transform.position = newPosition;
 
-        yaxis = Input.GetAxisRaw("Vertical");
         
-        //transform.Rotate(0,0,-Input.GetAxisRaw("Horizontal"));
+        yaxis = Input.GetAxisRaw("Vertical");
         
         if(Input.GetButtonDown("Jump"))
         {
@@ -87,6 +85,7 @@ public class PlayerControl : MonoBehaviour
             Destroy(newBullet,0.45f);
             shootCdTimer = shootCd;
             aSource.Play();
+            rb.AddForce(-transform.up * 5f);
         }
         if(shootCdTimer > 0f)
             shootCdTimer -= Time.deltaTime;
